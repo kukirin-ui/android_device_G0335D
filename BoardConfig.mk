@@ -54,7 +54,9 @@ BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
-TARGET_PREBUILT_KERNEL := kernel/gree/msm8996/prebuilt/Image.gz-dtb
+TARGET_KERNEL_SOURCE := kernel/gree/msm8996
+TARGET_KERNEL_CONFIG := g0335d_defconfig
+# TARGET_PREBUILT_KERNEL := kernel/gree/msm8996/prebuilt/Image.gz-dtb
 
 # QCOM hardware
 BOARD_USES_QCOM_HARDWARE := true

@@ -1,0 +1,3 @@
+# G0335D protobuf shim for CNE libs (LOS 15.1)
+on boot
+    export LD_SHIM_LIBS /system/vendor/lib64/libcne.so|libmdmdetect.so:/system/vendor/lib64/libcneapiclient.so|libmdmdetect.so

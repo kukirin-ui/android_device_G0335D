@@ -206,3 +206,12 @@ vendor/lib/libchromatix_s5k3p3sm_postproc.so
 vendor/lib/libchromatix_s5k3p3sm_preview.so
 vendor/lib/libchromatix_s5k3p3sm_snapshot.so
 vendor/lib/libmmcamera_s5k3p3sm.so
+
+# G0335D stock 64-bit (from unbrick ROM)
+vendor/lib64/libmdmdetect.so
+vendor/lib64/libcne.so
+vendor/lib64/libcneapiclient.so
+vendor/lib64/libcneqmiutils.so
+vendor/lib/libcne.so
+vendor/lib/libcneapiclient.so
+vendor/lib/libcneqmiutils.so

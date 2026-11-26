@@ -352,3 +352,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # LineageSettings provider (needed by PhoneWindowManager at boot)
 PRODUCT_PACKAGES += \
     LineageSettingsProvider
+
+# Panel node fallback (if cmdline panel is missing from DTB)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.boot.panel.fallback=1

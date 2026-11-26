@@ -340,3 +340,7 @@ PRODUCT_COPY_FILES += \
 # WebView
 PRODUCT_PACKAGES += \
     webview
+
+# Device keys default (LineageSettings provider not ready at boot)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.lineage.device.keys.default=0

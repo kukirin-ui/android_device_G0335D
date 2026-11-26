@@ -369,3 +369,10 @@ PRODUCT_PACKAGES += \
     android.hardware.health@1.0-impl \
     android.hardware.thermal@1.1-impl \
     android.hardware.configstore@1.0-impl
+
+# Keymaster, gatekeeper, camera
+PRODUCT_PACKAGES += \
+    android.hardware.keymaster@3.0-impl \
+    android.hardware.gatekeeper@1.0-impl \
+    android.hardware.camera.provider@2.4-impl \
+    android.hardware.camera.provider@2.4-external-service

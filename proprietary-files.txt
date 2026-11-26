@@ -231,3 +231,12 @@ vendor/lib/hw/hwcomposer.msm8996.so
 # Gralloc dependency
 vendor/lib64/libgrallocutils.so
 vendor/lib/libgrallocutils.so
+
+# Graphics HAL impls
+vendor/lib64/hw/android.hardware.graphics.mapper@2.0-impl.so
+vendor/lib64/hw/android.hardware.graphics.allocator@2.0-impl.so
+vendor/lib64/hw/android.hardware.graphics.composer@2.1-impl.so
+vendor/lib64/hw/android.hardware.memtrack@1.0-impl.so
+vendor/lib/hw/android.hardware.graphics.mapper@2.0-impl.so
+vendor/lib/hw/android.hardware.graphics.allocator@2.0-impl.so
+vendor/lib/hw/android.hardware.graphics.composer@2.1-impl.so

@@ -257,6 +257,8 @@ on boot
 # msm specific files that need to be created on /data
 on post-fs-data
     # NFC
+    exec - root root -- /system/bin/sh -c "printf '%s\n' '#!/system/bin/sh' 'export LD_PRELOAD=/vendor/lib64/libprotobuf_stub_cne.so' 'exec /system/bin/cnd \"\\$@\"' > /system/bin/cnd_wrapper.sh; chmod 755 /system/bin/cnd_wrapper.sh; printf '%s\n' '#!/system/bin/sh' 'export LD_PRELOAD=/vendor/lib64/libprotobuf_stub_cne.so' 'exec /system/bin/netmgrd \"\\$@\"' > /system/bin/netmgrd_wrapper.sh; chmod 755 /system/bin/netmgrd_wrapper.sh"
+
     mkdir /data/nfc
 
     # Sensors

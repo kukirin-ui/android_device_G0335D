@@ -333,3 +333,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/bin/cnd_wrapper.sh:$(TARGET_OUT)/bin/cnd_wrapper.sh \
     $(LOCAL_PATH)/rootdir/bin/netmgrd_wrapper.sh:$(TARGET_OUT)/bin/netmgrd_wrapper.sh
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/g0335d_wrappers.rc:$(TARGET_OUT)/etc/init/g0335d_wrappers.rc

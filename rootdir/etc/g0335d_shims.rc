@@ -1,3 +1,6 @@
 # G0335D protobuf shim for CNE libs (LOS 15.1)
 on early-init
     export LD_SHIM_LIBS /system/vendor/lib64/libcne.so|/vendor/lib64/libprotobuf_stub_cne.so:/system/vendor/lib64/libcneapiclient.so|/vendor/lib64/libprotobuf_stub_cne.so:/system/vendor/lib64/libcneqmiutils.so|/vendor/lib64/libprotobuf_stub_cne.so
+
+on post-fs-data
+    export LD_SHIM_LIBS /system/vendor/lib64/libcne.so|/vendor/lib64/libprotobuf_stub_cne.so:/system/vendor/lib64/libcneapiclient.so|/vendor/lib64/libprotobuf_stub_cne.so:/system/vendor/lib64/libcneqmiutils.so|/vendor/lib64/libprotobuf_stub_cne.so

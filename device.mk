@@ -344,3 +344,7 @@ PRODUCT_PACKAGES += \
 # Device keys default (LineageSettings provider not ready at boot)
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.lineage.device.keys.default=0
+
+# Disable device keys feature that reads LineageSettings at boot
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.lineage.device.keys.default=0

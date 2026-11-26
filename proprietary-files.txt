@@ -215,3 +215,15 @@ vendor/lib64/libcneqmiutils.so
 vendor/lib/libcne.so
 vendor/lib/libcneapiclient.so
 vendor/lib/libcneqmiutils.so
+
+# Adreno GPU / EGL
+vendor/lib64/egl/libEGL_adreno.so
+vendor/lib64/egl/libGLESv1_CM_adreno.so
+vendor/lib64/egl/libGLESv2_adreno.so
+vendor/lib64/hw/gralloc.msm8996.so
+vendor/lib64/hw/hwcomposer.msm8996.so
+vendor/lib/egl/libEGL_adreno.so
+vendor/lib/egl/libGLESv1_CM_adreno.so
+vendor/lib/egl/libGLESv2_adreno.so
+vendor/lib/hw/gralloc.msm8996.so
+vendor/lib/hw/hwcomposer.msm8996.so

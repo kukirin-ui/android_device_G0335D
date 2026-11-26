@@ -348,3 +348,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Disable device keys feature that reads LineageSettings at boot
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.lineage.device.keys.default=0
+
+# LineageSettings provider (needed by PhoneWindowManager at boot)
+PRODUCT_PACKAGES += \
+    LineageSettingsProvider

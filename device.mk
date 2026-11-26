@@ -329,3 +329,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_COPY_FILES += \
     vendor/gree/g0335d/vendor/lib64/libprotobuf_stub_cne.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf_stub_cne.so
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/bin/cnd_wrapper.sh:$(TARGET_OUT)/bin/cnd_wrapper.sh \
+    $(LOCAL_PATH)/rootdir/bin/netmgrd_wrapper.sh:$(TARGET_OUT)/bin/netmgrd_wrapper.sh

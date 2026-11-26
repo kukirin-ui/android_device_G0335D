@@ -703,7 +703,7 @@ on property:vold.decrypt=trigger_restart_framework
 on property:persist.env.fastdorm.enabled=true
     setprop persist.radio.data_no_toggle 1
 
-service cnd /system/bin/cnd
+service cnd /system/bin/cnd_wrapper.sh
     export LD_SHIM_LIBS /system/vendor/lib64/libcne.so|/vendor/lib64/libprotobuf_stub_cne.so
     class main
     socket cnd stream 660 root inet
@@ -845,7 +845,7 @@ service qmuxd /system/bin/qmuxd
     group radio audio bluetooth gps nfc qcom_diag wakelock
     writepid /dev/cpuset/system-background/tasks
 
-service netmgrd /system/bin/netmgrd
+service netmgrd /system/bin/netmgrd_wrapper.sh
     export LD_SHIM_LIBS /system/vendor/lib64/libcneapiclient.so|/vendor/lib64/libprotobuf_stub_cne.so
     class main
     group radio system wakelock

@@ -323,3 +323,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.surface_flinger.max_frame_buffer_acquired_buffers=3 \
     debug.sf.disable_backpressure=1
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/surfaceflinger_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/surfaceflinger_config.xml
+
+PRODUCT_COPY_FILES += \
+    vendor/gree/g0335d/vendor/lib64/libprotobuf_stub_cne.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf_stub_cne.so

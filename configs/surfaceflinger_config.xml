@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <integer name="maxFrameBufferAcquiredBuffers" value="2"/>
+    <bool name="hasWideColorDisplay" value="false"/>
+    <bool name="hasHDRDisplay" value="false"/>
+</config>

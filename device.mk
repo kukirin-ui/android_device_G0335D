@@ -77,6 +77,7 @@ PRODUCT_CHARACTERISTICS := nosdcard
 
 # Audio
 PRODUCT_PACKAGES += \
+    libprotobuf_stub_cne \
     audiod \
     audio.a2dp.default \
     audio.primary.msm8996 \

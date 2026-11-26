@@ -362,3 +362,10 @@ PRODUCT_PACKAGES += \
     android.hardware.audio@2.0-impl \
     android.hardware.audio.effect@2.0-impl \
     android.hardware.soundtrigger@2.0-impl
+
+# Missing HALs
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.composer@2.1-impl \
+    android.hardware.health@1.0-impl \
+    android.hardware.thermal@1.1-impl \
+    android.hardware.configstore@1.0-impl

@@ -356,3 +356,9 @@ PRODUCT_PACKAGES += \
 # Panel node fallback (if cmdline panel is missing from DTB)
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.boot.panel.fallback=1
+
+# Audio HAL
+PRODUCT_PACKAGES += \
+    android.hardware.audio@2.0-impl \
+    android.hardware.audio.effect@2.0-impl \
+    android.hardware.soundtrigger@2.0-impl

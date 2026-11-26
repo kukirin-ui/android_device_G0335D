@@ -704,6 +704,7 @@ on property:persist.env.fastdorm.enabled=true
     setprop persist.radio.data_no_toggle 1
 
 service cnd /system/bin/cnd
+    export LD_SHIM_LIBS /system/vendor/lib64/libcne.so|/vendor/lib64/libprotobuf_stub_cne.so
     class main
     socket cnd stream 660 root inet
     group root wakelock
@@ -845,6 +846,7 @@ service qmuxd /system/bin/qmuxd
     writepid /dev/cpuset/system-background/tasks
 
 service netmgrd /system/bin/netmgrd
+    export LD_SHIM_LIBS /system/vendor/lib64/libcneapiclient.so|/vendor/lib64/libprotobuf_stub_cne.so
     class main
     group radio system wakelock
     writepid /dev/cpuset/system-background/tasks

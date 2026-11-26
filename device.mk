@@ -288,3 +288,6 @@ $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-hwui-memory.m
 PRODUCT_COPY_FILES += \
     vendor/gree/g0335d/vendor/lib64/libgrallocutils.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libgrallocutils.so \
     vendor/gree/g0335d/vendor/lib/libgrallocutils.so:$(TARGET_COPY_OUT_VENDOR)/lib/libgrallocutils.so
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml

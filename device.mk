@@ -376,3 +376,7 @@ PRODUCT_PACKAGES += \
     android.hardware.gatekeeper@1.0-impl \
     android.hardware.camera.provider@2.4-impl \
     android.hardware.camera.provider@2.4-external-service
+
+# camera.msm8996.so (system/lib/hw, 32-bit) needs this at dlopen time
+PRODUCT_COPY_FILES += \
+    vendor/gree/g0335d/vendor/lib/libarcsoft_high_dynamic_range.so:system/lib/libarcsoft_high_dynamic_range.so

@@ -315,10 +315,6 @@ PRODUCT_COPY_FILES += \
     vendor/gree/g0335d/vendor/lib64/libsdmutils.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libsdmutils.so \
     vendor/gree/g0335d/vendor/lib64/libsdm-disp-vndapis.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libsdm-disp-vndapis.so
 
-# Force protobuf stub
-PRODUCT_COPY_FILES += \
-    vendor/gree/g0335d/vendor/lib64/libprotobuf_stub_cne.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf_stub_cne.so
-
 # SF queryDisplayProperties workaround
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.surface_flinger.max_frame_buffer_acquired_buffers=3 \
@@ -326,9 +322,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/surfaceflinger_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/surfaceflinger_config.xml
-
-PRODUCT_COPY_FILES += \
-    vendor/gree/g0335d/vendor/lib64/libprotobuf_stub_cne.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf_stub_cne.so
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/bin/cnd_wrapper.sh:$(TARGET_OUT)/bin/cnd_wrapper.sh \

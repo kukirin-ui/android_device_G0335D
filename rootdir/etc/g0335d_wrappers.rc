@@ -1,3 +1,0 @@
-on post-fs-data
-    exec - root root -- /system/bin/sh -c "echo '#!/system/bin/sh' > /system/bin/cnd_wrapper.sh; echo 'export LD_PRELOAD=/vendor/lib64/libprotobuf_stub_cne.so' >> /system/bin/cnd_wrapper.sh; echo 'exec /system/bin/cnd \"\$@\"' >> /system/bin/cnd_wrapper.sh; chmod 755 /system/bin/cnd_wrapper.sh"
-    exec - root root -- /system/bin/sh -c "echo '#!/system/bin/sh' > /system/bin/netmgrd_wrapper.sh; echo 'export LD_PRELOAD=/vendor/lib64/libprotobuf_stub_cne.so' >> /system/bin/netmgrd_wrapper.sh; echo 'exec /system/bin/netmgrd \"\$@\"' >> /system/bin/netmgrd_wrapper.sh; chmod 755 /system/bin/netmgrd_wrapper.sh"

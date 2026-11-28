@@ -27,6 +27,9 @@ Logs: `audio_effects.xml` TinyXML parse failure; unresolved `acdb_loader_init_v3
 ## LatinIME JNI — library missing (confirmed)
 `UnsatisfiedLinkError` for `libjni_latinimegoogle.so`. Determine the installed keyboard variant and expected JNI module, ABI and APK native library placement; repair build/packaging variant rather than copying an arbitrary library.
 
+## SELinux / security posture (confirmed)
+Props show `ro.boot.selinux=permissive`; the logs include repeated AVC denials while permissive. Treat this as a security/debug state, not a production fix. After functional repairs, create narrowly scoped policy rules from observed access needs and re-test in enforcing mode. Do not blindly generate broad allow rules from all denials.
+
 ## Other observations
 - CNSS log-folder creation fails for `/sdcard/wlan_logs/`; verify path/permissions if WLAN logging is intended. Not proven to be the Wi-Fi driver root cause.
 - Codec sample/decode warnings were observed but are not proven boot blockers.

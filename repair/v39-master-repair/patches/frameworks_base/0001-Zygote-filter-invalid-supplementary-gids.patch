@@ -1,0 +1,48 @@
+From: G0335D Repair
+Subject: [PATCH 1/1] Zygote: filter invalid supplementary GIDs before setgroups
+
+The v39 capture shows two Zygote child-start failures with setgroups(EINVAL)
+and the diagnostic GID list contains -1. Filter negative entries before calling
+setgroups(), log the discarded count, and preserve the fatal path if the syscall
+still fails. This is a defensive recovery patch; the invalid permission/GID
+mapping still needs to be traced and fixed at its source.
+
+--- a/core/jni/com_android_internal_os_Zygote.cpp
++++ b/core/jni/com_android_internal_os_Zygote.cpp
+@@ -20,6 +20,7 @@
+ #include <list>
+ #include <sstream>
+ #include <string>
++#include <vector>
+
+ #include <fcntl.h>
+ #include <grp.h>
+@@ -140,10 +141,25 @@ static void SetGids(JNIEnv* env, jintArray javaGids) {
+   if (gids.get() == NULL) {
+     RuntimeAbort(env, __LINE__, "Getting gids int array failed");
+   }
+-  int rc = setgroups(gids.size(), reinterpret_cast<const gid_t*>(&gids[0]));
++
++  // Invalid supplementary GIDs can make setgroups() fail with EINVAL.
++  std::vector<gid_t> validGids;
++  validGids.reserve(gids.size());
++  int invalidGidCount = 0;
++  for (int i = 0; i < gids.size(); ++i) {
++    if (gids[i] < 0) {
++      ++invalidGidCount;
++      continue;
++    }
++    validGids.push_back(static_cast<gid_t>(gids[i]));
++  }
++  if (invalidGidCount > 0) {
++    ALOGW("Discarded %d invalid supplementary GID(s) before setgroups()",
++          invalidGidCount);
++  }
++  int rc = setgroups(validGids.size(), validGids.empty() ? nullptr : validGids.data());
+   if (rc == -1) {
+     std::ostringstream oss;
+-    oss << "setgroups failed: " << strerror(errno) << ", gids.size=" << gids.size();
++    oss << "setgroups failed: " << strerror(errno) << ", gids.size=" << validGids.size();
+     RuntimeAbort(env, __LINE__, oss.str().c_str());
+   }
+ }

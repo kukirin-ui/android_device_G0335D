@@ -31,7 +31,10 @@ ifneq ($(filter omni_g0335d twrp_g0335d,$(TARGET_PRODUCT)),)
 else
 ifeq ($(TARGET_DEVICE),g0335d)
 
-include $(call all-makefiles-under,$(LOCAL_PATH))
+# GreeDoze depends on org.cyanogenmod.platform.internal (CM-era); not present in
+# LineageOS 15.1. Exclude it from the build graph for now.
+G0335D_ALL_MK := $(call all-makefiles-under,$(LOCAL_PATH))
+include $(filter-out $(LOCAL_PATH)/doze/Android.mk,$(G0335D_ALL_MK))
 
 IMS_LIBS := libimscamera_jni.so libimsmedia_jni.so
 

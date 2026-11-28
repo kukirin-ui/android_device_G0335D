@@ -1,10 +1,69 @@
+<!--
+  v23: 只声明「实测有进程注册成功」的 HAL。
+  依据 v22 logcat 的 Registration complete 记录：
+    - android.hardware.audio@2.0::IDevicesFactory/default
+    - android.hardware.audio.effect@2.0::IEffectsFactory/default
+    - android.hardware.soundtrigger@2.0::ISoundTriggerHw/default
+    - android.hardware.health@1.0::IHealth/default
+  其余 HAL（keymaster/gatekeeper/sensors/power/light/vibrator/thermal/
+  configstore/composer/camera.provider/memtrack/allocator）一律不声明：
+  HIDL 客户端遇到「manifest 有声明但无人注册」时会无限重试，
+  导致 system_server 主线程死等在 StartActivityManager。
+  不声明时客户端只打一句 Cannot find entry 后立即降级，可以继续启动。
+  mapper 一条保持上游原文不动。
+-->
 <manifest version="1.0" type="device">
+    <hal format="hidl">
+        <name>android.hardware.audio</name>
+        <transport>hwbinder</transport>
+        <version>2.0</version>
+        <interface>
+            <name>IDevicesFactory</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.audio.effect</name>
+        <transport>hwbinder</transport>
+        <version>2.0</version>
+        <interface>
+            <name>IEffectsFactory</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.soundtrigger</name>
+        <transport>hwbinder</transport>
+        <version>2.0</version>
+        <interface>
+            <name>ISoundTriggerHw</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.health</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IHealth</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
     <hal format="hidl">
         <name>android.hardware.graphics.mapper</name>
         <transport arch="32+64">passthrough</transport>
         <version>2.0</version>
         <interface>
             <name>IMapper</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.bluetooth</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IBluetoothHci</name>
             <instance>default</instance>
         </interface>
     </hal>

@@ -15,6 +15,7 @@ LOCAL_C_INCLUDES += external/libnetfilter_conntrack/include
 LOCAL_C_INCLUDES += external/libnfnetlink/include
 
 LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+LOCAL_C_INCLUDES += kernel/gree/msm8996/uapi
 LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 
 

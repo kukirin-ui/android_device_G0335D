@@ -9,7 +9,7 @@ mapping still needs to be traced and fixed at its source.
 
 --- a/core/jni/com_android_internal_os_Zygote.cpp
 +++ b/core/jni/com_android_internal_os_Zygote.cpp
-@@ -20,6 +20,7 @@
+@@ -23,6 +23,7 @@
  #include <list>
  #include <sstream>
  #include <string>
@@ -17,12 +17,12 @@ mapping still needs to be traced and fixed at its source.
 
  #include <fcntl.h>
  #include <grp.h>
-@@ -140,10 +141,25 @@ static void SetGids(JNIEnv* env, jintArray javaGids) {
+@@ -183,10 +184,27 @@
    if (gids.get() == NULL) {
      RuntimeAbort(env, __LINE__, "Getting gids int array failed");
    }
-
--  int rc = setgroups(gids.size(), reinterpret_cast<const gid_t*>(&gids[0]));
+-  int rc = setgroups(gids.size(), reinterpret_cast<const gid_t*>(&gids[0]);
++
 +  // A malformed permission-to-GID mapping may include a negative value.
 +  // Linux setgroups() rejects invalid group IDs with EINVAL.
 +  std::vector<gid_t> validGids;

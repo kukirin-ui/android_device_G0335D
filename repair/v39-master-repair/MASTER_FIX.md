@@ -1,39 +1,46 @@
-# G0335D v39 Master Repair
+# G0335D v39 — Master Repair Audit
 
-Scope: LineageOS 15.1 / Android 8.1 on GREE G0335D / MSM8996Pro, based on the provided bootloop_error.txt and G0335D_v39_logs_20261128.zip, plus public device-tree source review.
+Target: GREE G0335D / MSM8996Pro, LineageOS 15.1, Android 8.1 (SDK 27). Basis: user-supplied `bootloop_error.txt` and `G0335D_v39_logs_20261128.zip`, and source review of public `android_device_G0335D` device files (`BoardConfig.mk`, `device.mk`, `Android.mk`, `rootdir/etc/manifest.xml`, Wi-Fi config and audio config files). Framework source reviewed from LineageOS 15.1 branch.
 
-## Priority 0 — Zygote crash (confirmed)
-Logs show two fatal child-start failures: setgroups(EINVAL), gids.size=10 and 14. phone_gids diagnostic includes -1. Negative supplementary GIDs are invalid. Patch 0001 filters negative GIDs, logs the discarded count, preserves valid GIDs, and keeps the fatal path if setgroups still fails. This is a defensive guard, not the source mapping correction.
+## Critical / confirmed — Zygote supplemental GIDs
+**Evidence:** `setgroups failed: Invalid argument`, two failures with GID list sizes 10 and 14. The captured phone supplementary GID list includes `-1`. Linux rejects invalid group IDs; child process specialization aborts. This is the first priority because it is on the app-start path.
 
-Trace the invalid GID back to permission-to-GID definitions and PackageManager group resolution in frameworks/base/data/etc/platform.xml and related mapping inputs. Do not substitute an arbitrary real GID.
+**Patch:** `patches/frameworks_base/0001-Zygote-filter-invalid-supplementary-gids.patch` filters only negative supplemental GIDs, logs the count, preserves valid values and still aborts if `setgroups()` fails for any remaining reason. Patch syntax/application was checked against a source-shaped test fixture. It has **not** been applied to a complete framework checkout or compiled.
 
-## Wi-Fi
-Repeated android.hardware.wifi@1.0-service: Failed to load WiFi driver. Device config uses /system/lib/modules/wlan.ko and symlink to qca_cld/qca_cld_wlan.ko. Evidence is insufficient to distinguish missing module, kernel ABI/vermagic/symbol mismatch, module-init failure, firmware missing, or init ordering. Capture module ls/stat, modinfo, uname, insmod/modprobe exit and dmesg before changing paths.
+**Root-cause follow-up:** trace the bad value through Android permission-to-GID definitions and PackageManager mapping (`frameworks/base/data/etc/platform.xml` and the branch's actual mapping inputs). Never map `-1` to an arbitrary group ID. This filter is a defensive boot recovery guard, not the final mapping fix.
 
-## Fingerprint
-Goodix HAL reports Fp::connect failed, repeatedly cannot open /dev/goodix_fp and flips persist.sys.fp.goodix to 0. Check kernel driver/node creation, actual node path, permissions/ownership, ueventd/init, SELinux and HAL ABI. Don't create fake device nodes or globally loosen SELinux.
+## Wi-Fi — driver load failure (confirmed, root cause unresolved)
+Log repeats `android.hardware.wifi@1.0-service: Failed to load WiFi driver`. Device configuration points at `/system/lib/modules/wlan.ko`, module name `wlan`, with a symlink intended to target `qca_cld/qca_cld_wlan.ko`. Not enough evidence to decide between missing module, bad symlink, kernel ABI/vermagic/symbol mismatch, module-init failure, firmware missing, or init order. Required next evidence: module file paths/permissions, `modinfo`, kernel release, load exit status and surrounding `dmesg`.
 
-## Bluetooth
-Enable timeout followed by com.android.bluetooth ANR; dmesg has repeated BT failures. Inspect init sequence, firmware/NV files, transport (SMD/serial), controller/HCI bring-up and service dependencies. Don't change buildcfg feature flags without specific evidence.
+## Fingerprint — Goodix unavailable (confirmed)
+Log shows `Fp::connect failed`, repeated `open /dev/goodix_fp failed`, and HAL toggles `persist.sys.fp.goodix` to 0. Check kernel driver/device-node creation, node name, ueventd/init ownership/mode, SELinux and vendor HAL ABI. Do not create a fake node or globally weaken SELinux.
 
-## USB
-UsbPortManager cannot find USB HAL. Device manifest reviewed lists mapper, Bluetooth, fingerprint and Wi-Fi, but no USB HAL; inspected device.mk excerpt does not show a USB HAL service package. Confirm the exact Android 8.1 USB HAL implementation and service/init rc exists in the source tree before adding product package and manifest. No speculative package/manifest patch included.
+## Bluetooth — timeout and ANR (confirmed)
+Bluetooth enable timeout and `ANR in com.android.bluetooth`; dmesg includes repeated Bluetooth failures. Inspect firmware/NV, transport (SMD/serial), controller/HCI bring-up, init ordering and vendor service dependencies. Avoid changing bdroid feature flags without specific supporting evidence.
 
-## Audio
-Evidence: audio_effects.xml TinyXML parse failure; undefined acdb_loader_init_v3 symbol; amplifier init failure; IO-policy file fallback. Inspect whether the ROM expects legacy .conf or XML; verify installed config path and syntax. Identify loaded ACDB vendor library and ABI/symbol exports. Verify mixer/amp topology against actual hardware. Don't swap proprietary blobs blindly.
+## USB HAL — service missing (confirmed)
+`UsbPortManager: connectToProxy: usb hal service not found`. The inspected device manifest lists mapper, Bluetooth, fingerprint and Wi-Fi but no USB HAL; inspected product file did not show an explicit USB HAL service package. Verify the exact Android 8.1 implementation/service/init rc exists in the build tree before adding package + manifest. No speculative package name or declaration is committed.
 
-## LatinIME
-UnsatisfiedLinkError for libjni_latinimegoogle.so. Verify LatinIME variant, expected JNI module and APK native library directories/ABIs. Fix packaging/build variant, not by copying an arbitrary library.
+## Audio — config and vendor library issues (confirmed)
+Logs: `audio_effects.xml` TinyXML parse failure; unresolved `acdb_loader_init_v3`; amplifier initialization failed; IO-policy path fallback. Inspect installed config filename/path and whether this branch expects XML or legacy CONF. Identify actual ACDB library loaded and its ABI/exported symbols. Validate mixer/amplifier controls against hardware. Do not swap vendor blobs blindly.
 
-## Other
-CNSS cannot create /sdcard/wlan_logs; verify storage path/permissions if logging is desired. Codec sample decode messages are not proven boot blockers. Props identify Android 8.1 SDK 27 and ro.zygote=zygote64_32.
+## LatinIME JNI — library missing (confirmed)
+`UnsatisfiedLinkError` for `libjni_latinimegoogle.so`. Determine the installed keyboard variant and expected JNI module, ABI and APK native library placement; repair build/packaging variant rather than copying an arbitrary library.
 
-## Build and device validation
-1. Apply patch to exact LineageOS 15.1 frameworks/base; git apply --check.
-2. Build affected native framework and ROM; save complete logs.
-3. Flash using established recovery/backup procedure.
-4. Capture fresh logcat -b all, dmesg, getprop, ps -A, dumpsys package com.android.phone and phone supplementary GIDs.
-5. Confirm Zygote no longer reports setgroups(EINVAL), phone/RIL launches and home screen remains stable.
-6. After stable boot, fix Wi-Fi, fingerprint, Bluetooth, USB, audio and LatinIME one subsystem at a time with before/after captures.
+## Other observations
+- CNSS log-folder creation fails for `/sdcard/wlan_logs/`; verify path/permissions if WLAN logging is intended. Not proven to be the Wi-Fi driver root cause.
+- Codec sample/decode warnings were observed but are not proven boot blockers.
+- Props show Android 8.1 SDK 27 and `ro.zygote=zygote64_32`.
 
-Status: only the Zygote GID guard is implemented in this repair bundle. The mapping correction and secondary subsystem repairs, build, flash and boot verification remain outstanding.
+## Fix status
+- **Implemented:** defensive Zygote negative-GID filter patch.
+- **Review/diagnosis only:** invalid GID mapping source, Wi-Fi, fingerprint, Bluetooth, USB, audio, LatinIME.
+- **Not done:** full ROM/framework compilation, flashing, boot validation, or hardware tests. These require a complete source checkout/build environment and device access.
+
+## Test sequence
+1. Apply patch in the exact LineageOS 15.1 frameworks/base checkout and run `git apply --check`.
+2. Compile affected native framework and ROM, save full build logs.
+3. Flash only with the user's known recovery/backup method.
+4. Capture fresh `logcat -b all -d`, `dmesg`, `getprop`, `ps -A`, `dumpsys package com.android.phone`, and actual phone supplemental GIDs.
+5. Confirm no Zygote `setgroups(EINVAL)`, phone/RIL starts, SystemUI/home are stable.
+6. Repair secondary subsystems individually, collecting before/after evidence for each.

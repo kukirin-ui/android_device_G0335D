@@ -41,6 +41,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     TARGET_DEVICE=G0335D \
     PRODUCT_NAME=G0335D
 
-PRODUCT_BUILD_PROP_OVERRIDES += \
-    BUILD_FINGERPRINT=GREE/G0335D/G0335D:7.1.2/N2G47H/:user/dev-keys \
-    PRIVATE_BUILD_DESC="HALO 2.1.9 A1"
+# No stock 7.1.2 fingerprint override: Android 8.1 compares
+# ro.build.fingerprint with ro.vendor.build.fingerprint at boot and shows
+# "vendor image mismatch" when they differ.

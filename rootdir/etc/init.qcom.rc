@@ -705,9 +705,12 @@ on property:vold.decrypt=trigger_restart_framework
 on property:persist.env.fastdorm.enabled=true
     setprop persist.radio.data_no_toggle 1
 
+# Disabled: CNE blobs need the 7.1 protobuf, but cnd also loads 8.1's
+# libmediadrm (via lib-dplmedia), and both protobufs cannot share one
+# process. CNE is optional; netmgrd handles mobile data.
 service cnd /system/bin/cnd_wrapper.sh
-    export LD_SHIM_LIBS /system/vendor/lib64/libcne.so|/vendor/lib64/libprotobuf_stub_cne.so
     class main
+    disabled
     socket cnd stream 660 root inet
     group root wakelock
     writepid /dev/cpuset/system-background/tasks

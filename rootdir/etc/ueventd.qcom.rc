@@ -239,3 +239,6 @@
 #ImproveTouch device
 /dev/hbtp_input           0660   system     system
 /dev/hbtp_vm              0660   system     system
+
+# Goodix fingerprint (gx_fpd runs as system)
+/dev/goodix_fp            0660   system     system

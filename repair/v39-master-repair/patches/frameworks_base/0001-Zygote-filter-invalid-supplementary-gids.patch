@@ -21,9 +21,10 @@ mapping still needs to be traced and fixed at its source.
    if (gids.get() == NULL) {
      RuntimeAbort(env, __LINE__, "Getting gids int array failed");
    }
+
 -  int rc = setgroups(gids.size(), reinterpret_cast<const gid_t*>(&gids[0]));
-+
-+  // Invalid supplementary GIDs can make setgroups() fail with EINVAL.
++  // A malformed permission-to-GID mapping may include a negative value.
++  // Linux setgroups() rejects invalid group IDs with EINVAL.
 +  std::vector<gid_t> validGids;
 +  validGids.reserve(gids.size());
 +  int invalidGidCount = 0;

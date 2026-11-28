@@ -420,4 +420,10 @@
         <item>"/system/framework/arm64/boot-core-libart.oat"</item>
    </string-array>
 
+
+    <!-- 屏幕内虚拟导航栏（On-screen navigation bar）
+         本机为 1080x2160 全面屏，无物理导航键。AOSP 默认 false，
+         不加这一项 SystemUI 不会加载 NavigationBarView。
+         注意：qemu.hw.mainkeys 若被设成 1 会覆盖本位（本机为空，不影响）。 -->
+    <bool name="config_showNavigationBar">true</bool>
 </resources>

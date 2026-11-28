@@ -284,18 +284,8 @@ PRODUCT_COPY_FILES += \
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-dalvik-heap.mk)
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-hwui-memory.mk)
 
-# Gralloc dependency (manual copy)
-PRODUCT_COPY_FILES += \
-    vendor/gree/g0335d/vendor/lib64/libgrallocutils.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libgrallocutils.so \
-    vendor/gree/g0335d/vendor/lib/libgrallocutils.so:$(TARGET_COPY_OUT_VENDOR)/lib/libgrallocutils.so
-
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
-
-# Composer service
-PRODUCT_COPY_FILES += \
-    vendor/gree/g0335d/vendor/bin/hw/android.hardware.graphics.composer@2.1-service:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.graphics.composer@2.1-service \
-    vendor/gree/g0335d/vendor/etc/init/android.hardware.graphics.composer@2.1-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.graphics.composer@2.1-service.rc
 
 # HWC workaround
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -304,16 +294,15 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.egl.hw=1 \
     persist.sys.ui.hw=true
 
+# 32-bit only: 64-bit counterpart is copied by g0335d-vendor.mk (proprietary source).
 PRODUCT_COPY_FILES += \
-    vendor/gree/g0335d/vendor/lib64/libmdmdetect.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libmdmdetect.so \
     vendor/gree/g0335d/vendor/lib/libmdmdetect.so:$(TARGET_COPY_OUT_VENDOR)/lib/libmdmdetect.so
 
-# Force critical copies
+# OpenCL: 64-bit for HALs, 32-bit for mm-qcamera-daemon (error: library "libOpenCL.so" not found)
+# libsdmcore/libsdmutils/libsdm-disp-vndapis are copied by g0335d-vendor.mk (v11 display stack block).
 PRODUCT_COPY_FILES += \
     vendor/gree/g0335d/vendor/lib64/libOpenCL.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libOpenCL.so \
-    vendor/gree/g0335d/vendor/lib64/libsdmcore.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libsdmcore.so \
-    vendor/gree/g0335d/vendor/lib64/libsdmutils.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libsdmutils.so \
-    vendor/gree/g0335d/vendor/lib64/libsdm-disp-vndapis.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libsdm-disp-vndapis.so
+    vendor/gree/g0335d/vendor/lib/libOpenCL.so:$(TARGET_COPY_OUT_VENDOR)/lib/libOpenCL.so
 
 # SF queryDisplayProperties workaround
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -323,52 +312,124 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/surfaceflinger_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/surfaceflinger_config.xml
 
+# cnd/netmgrd/rild protobuf LD_PRELOAD wrappers (upstream ffeff91 + 7bb1c0f)
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/bin/cnd_wrapper.sh:$(TARGET_OUT)/bin/cnd_wrapper.sh \
-    $(LOCAL_PATH)/rootdir/bin/netmgrd_wrapper.sh:$(TARGET_OUT)/bin/netmgrd_wrapper.sh \
-    $(LOCAL_PATH)/rootdir/bin/rild_wrapper.sh:$(TARGET_OUT)/bin/rild_wrapper.sh
+    $(LOCAL_PATH)/rootdir/bin/cnd_wrapper.sh:system/bin/cnd_wrapper.sh \
+    $(LOCAL_PATH)/rootdir/bin/netmgrd_wrapper.sh:system/bin/netmgrd_wrapper.sh \
+    $(LOCAL_PATH)/rootdir/bin/rild_wrapper.sh:system/bin/rild_wrapper.sh
 
+# System_server(PMS) needs lineage platform resources:
+#   org.lineageos.platform.internal.R.array.config_vendorPlatformSignatures
+# Missing -> Resources$NotFoundException in PackageManagerService.<init>.
+PRODUCT_PACKAGES += \
+    org.lineageos.platform-res \
+    org.lineageos.platform \
+    org.lineageos.platform.xml
 
-# WebView
+# upstream 3279092: WebView package for zygote
 PRODUCT_PACKAGES += \
     webview
 
-# Device keys default (LineageSettings provider not ready at boot)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.lineage.device.keys.default=0
-
-# Disable device keys feature that reads LineageSettings at boot
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.lineage.device.keys.default=0
-
-# LineageSettings provider (needed by PhoneWindowManager at boot)
+# upstream 914a4ac: PhoneWindowManager reads lineagesettings at boot
 PRODUCT_PACKAGES += \
     LineageSettingsProvider
 
-# Panel node fallback (if cmdline panel is missing from DTB)
+# upstream 674ac7c/b037c24 (dup): harmless default
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.lineage.device.keys.default=0
+
+# Panel node fallback (upstream 9846f5f)
+# NOTE: no kernel code in kernel_g0335d_android81_los151 reads this;
+# it does NOT fix the SHARP/ft8716 panel mismatch.
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.boot.panel.fallback=1
 
-# Audio HAL
+# --- v22: HIDL HAL services (upstream only added the -impl libs) ---
+# 7.1 device tree shipped audiod + legacy audio.primary; 8.1 audioserver requires
+# android.hardware.audio@2.0::IDevicesFactory from a real service.
+PRODUCT_PACKAGES += \
+    android.hardware.audio@2.0-service \
+    android.hardware.keymaster@3.0-service \
+    android.hardware.sensors@1.0-service \
+    android.hardware.power@1.0-service \
+    android.hardware.light@2.0-service \
+    android.hardware.vibrator@1.0-service \
+    android.hardware.health@1.0-service
+
+# upstream 4ecbf8b / be9b8ef / 2e158c5: impl libs
 PRODUCT_PACKAGES += \
     android.hardware.audio@2.0-impl \
     android.hardware.audio.effect@2.0-impl \
-    android.hardware.soundtrigger@2.0-impl
-
-# Missing HALs
-PRODUCT_PACKAGES += \
+    android.hardware.soundtrigger@2.0-impl \
     android.hardware.graphics.composer@2.1-impl \
     android.hardware.health@1.0-impl \
     android.hardware.thermal@1.1-impl \
-    android.hardware.configstore@1.0-impl
-
-# Keymaster, gatekeeper, camera
-PRODUCT_PACKAGES += \
+    android.hardware.configstore@1.0-impl \
     android.hardware.keymaster@3.0-impl \
     android.hardware.gatekeeper@1.0-impl \
     android.hardware.camera.provider@2.4-impl \
-    android.hardware.camera.provider@2.4-external-service
+    android.hardware.light@2.0-impl \
+    android.hardware.power@1.0-impl \
+    android.hardware.sensors@1.0-impl \
+    android.hardware.vibrator@1.0-impl \
+    libshim_camera \
+    android.hardware.bluetooth@1.0 \
+    android.hidl.base@1.0 \
+    android.hidl.manager@1.0
+
+# sensors@1.0-impl (multihal) reads /vendor/etc/sensors/hals.conf and requires
+# absolute paths; the 7.1 blob only has the relative name "sensors.ssc.so".
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/sensors_hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf
+
+# --- v22: 8.1 audio policy (audio_policy.conf is 7.1 format, ignored by 8.1) ---
+PRODUCT_COPY_FILES += \
+    hardware/qcom/audio-caf/msm8996/configs/msm8996/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml
 
 # camera.msm8996.so (system/lib/hw, 32-bit) needs this at dlopen time
+# upstream d3b767c (fix/camera-hdr-lib-and-wrappers-import)
 PRODUCT_COPY_FILES += \
     vendor/gree/g0335d/vendor/lib/libarcsoft_high_dynamic_range.so:system/lib/libarcsoft_high_dynamic_range.so
+
+# --- v33: 补 Trebuchet（桌面 / Launcher）---
+# 上游 vendor/lineage/config/common.mk 里本来就有 PRODUCT_PACKAGES += Trebuchet，
+# 但实测产物 obj/APPS 与 system/priv-app 里都没有该模块，这里显式再补一次。
+# 属于上游没有的改动，用户明确批准。
+PRODUCT_PACKAGES += Trebuchet
+
+# --- v34: 补 org.lineageos.profiles.xml ---
+# vendor/lineage/config/common.mk 尾部用 include 引入 lineage_sdk_common.mk，
+# 但该文件的 PRODUCT_COPY_FILES 没有进入本产品（产物 system/etc/permissions
+# 里 backup.xml / org.lineageos.android.xml / privapp-permissions-lineage.xml
+# 同样缺失，build.prop 里 ro.build.selinux、ro.com.google.clientidbase 也没有）。
+# 缺这个 xml 时 ProfileManagerService 不发布 binder 服务("feature not declared")，
+# SystemUI 的 KeyguardViewMediator.isProfileDisablingKeyguard 会 NPE。
+# 这里按设备实测（v34）显式补一条，范围仅此一个文件。
+PRODUCT_COPY_FILES += \
+    vendor/lineage/config/permissions/org.lineageos.profiles.xml:system/etc/permissions/org.lineageos.profiles.xml
+
+# v34d: LineageParts 是 priv-app，请求 CHANGE_CONFIGURATION / READ_SEARCH_INDEXABLES /
+# WRITE_MEDIA_STORAGE / WRITE_SECURE_SETTINGS 四个特权权限，白名单在下面这个文件里
+# （vendor/lineage/config/permissions/privapp-permissions-lineage.xml 第 58~63 行）。
+# 它同样是 common.mk:97 的 COPY 项，产物里缺失。当前 ro.control_privapp_permissions
+# 未设置（log 模式）不会拦，但白名单本是上游应有的，一并补上。
+PRODUCT_COPY_FILES += \
+    vendor/lineage/config/permissions/privapp-permissions-lineage.xml:system/etc/permissions/privapp-permissions-lineage.xml
+
+
+# --- v34b: 补 LineageParts 与开机动画 ---
+# 与 v33 Trebuchet、v34 profiles.xml 同一原因：vendor/lineage/config/common.mk 里
+# 的 PRODUCT_PACKAGES 没有进入本产品（产物里 LineageParts / bootanimation.zip /
+# Eleven / AudioFX 等全部缺失）。
+#   * LineageParts 缺失 => Settings 的 8 个页面 inflate LineagePartsPreference 时
+#     抛 "Part not found: <key>"，设置直接停止运行（关于手机/显示/声音/手势等）。
+#   * bootanimation.zip 缺失 => /system/media 为空，开机只有 AOSP 内置 ANDROID 文字。
+# 两处模块上游本来就有，这里按实测缺失显式补一次。
+PRODUCT_PACKAGES += \
+    LineageParts \
+    bootanimation.zip

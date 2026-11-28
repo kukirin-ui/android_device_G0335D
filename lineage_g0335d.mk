@@ -24,7 +24,7 @@ $(call inherit-product, device/gree/g0335d/device.mk)
 # cm-14.1 uses vendor/cm; LineageOS 15.1+ uses vendor/lineage.
 # Use inherit-product-if-exists so the tree still parses in TWRP's minimal
 # manifest, where vendor/cm is not present.
-$(call inherit-product-if-exists, vendor/cm/config/common_full_phone.mk)
+$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
 PRODUCT_NAME := lineage_g0335d
 PRODUCT_DEVICE := g0335d

@@ -135,9 +135,10 @@ PRODUCT_PACKAGES += \
     libjni_livedisplay
 
 
-# Fingerprint sensor
+# Fingerprint sensor (8.1: HIDL service; loads fingerprint.qcom.so,
+# which talks to gx_fpd from the vendor repo)
 PRODUCT_PACKAGES += \
-    fingerprintd
+    android.hardware.biometrics.fingerprint@2.1-service
 
 # For android_filesystem_config.h
 PRODUCT_PACKAGES += \
